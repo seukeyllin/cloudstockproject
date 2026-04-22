@@ -3,9 +3,15 @@
   import { romsStore, scanRoms } from './stores/roms';
   import type { Rom } from './types/rom';
   import { loadSettings, romsRootPath,savePath } from './stores/settings';
+  import { megaStorage, isMegaLoggedIn,loginMega, logoutMega } from './stores/mega';
 
   let currentPlatform = 'all';
   let isDark = true;
+
+  let showMegaModal = false;
+  let megaEmail = '';
+  let megaPassword = '';
+  let loginError = '';
 
   // Reage ao store (reatividade automática do Svelte)
   $: roms = $romsStore;
@@ -45,17 +51,34 @@ async function handleScan() {
 
       // Salva a pasta escolhida permanentemente na store 'settings'
       romsRootPath.set(selected);
-    console.log("📁 Pasta selecionada:", selected);
+      console.log("📁 Pasta selecionada:", selected);
 
       // Salva permanentemente usando a função correta
       await savePath(selected);
-      
       await scanRoms(selected);
     } catch (error) {
       console.error("❌ Erro ao abrir seletor:", error);
       alert("Não foi possível abrir o seletor de pasta.");
     }
   }
+  //funções do Modal do Mega
+  async function openMegaLogin() {
+    showMegaModal = true;
+    loginError = '';
+}
+
+async function handleMegaLogin() {
+  try {
+    await loginMega(megaEmail, megaPassword);
+    showMegaModal = false;
+    megaEmail = '';
+    megaPassword = '';
+  } catch (err) {
+    loginError = 'Email ou senha inválidos. Tente novamente.';
+  
+  }
+}
+
 </script>
 
 <div class="app" class:light={!isDark}>
@@ -71,35 +94,26 @@ async function handleScan() {
 
     <div class="actions">
       <button class="btn-scan" on:click={handleScan}>🔍 Escanear ROMs</button>
+
+      {#if $isMegaLoggedIn}
+        <button class="btn-mega-connected" on:click={logoutMega}>
+          ✅ Mega Conectado
+        </button>
+      {:else}
+        <button class="btn-mega" on:click={openMegaLogin}>
+          ☁️ Conectar Mega
+        </button>
+      {/if}
+
       <button class="btn-backup">💾 Backup na Nuvem</button>
       <button class="btn-add">+ Adicionar ROM</button>
     </div>
-  </header>
+  </header> 
 
   <div class="main-content">
     <aside class="sidebar">
       <nav>
-        <button class="platform" class:active={currentPlatform === 'all'} 
-           on:click={() => currentPlatform = 'all'}>
-          📚 Todos os jogos
-        </button>
-        <button class="platform" class:active={currentPlatform === 'nes'} 
-           on:click={() => currentPlatform = 'nes'}>
-          NES
-        </button>
-        <button class="platform" class:active={currentPlatform === 'n64'} 
-           on:click={() => currentPlatform = 'n64'}>
-          N64
-        </button>
-        <button class="platform" class:active={currentPlatform === 'ps1'} 
-           on:click={() => currentPlatform = 'ps1'}>
-          PlayStation 1
-        </button>
-        <button class="platform" class:active={currentPlatform === 'ps2'} 
-           on:click={() => currentPlatform = 'ps2'}>
-          PlayStation 2
-        </button>
-      </nav>
+        </nav>
     </aside>
 
     <main class="content">
@@ -113,24 +127,51 @@ async function handleScan() {
 
       <div class="rom-grid">
         {#each filteredRoms as rom}
-<div class="rom-card">
-  <div class="cover">
-    {#if rom.coverPath}
-      <img src={rom.coverPath} alt={rom.title} />
-    {:else}
-      <span style="font-size: 3rem;">🕹️</span>
-    {/if}
-  </div>
-  <p class="title">{rom.title}</p>
-  <p class="platform-tag">{rom.platform}</p>
-</div>
+          <div class="rom-card">
+            <div class="cover">
+              {#if rom.coverPath}
+                <img src={rom.coverPath} alt={rom.title} />
+              {:else}
+                <span style="font-size: 3rem;">🕹️</span>
+              {/if}
+            </div>
+            <p class="title">{rom.title}</p>
+            <p class="platform-tag">{rom.platform}</p>
+          </div>
         {/each}
       </div>
     </main>
-  </div>
+  </div> {#if showMegaModal}
+    <div class="modal-overlay" on:click={() => showMegaModal = false}>
+      <div class="modal" role="dialog" aria-modal="true" on:click|stopPropagation>
+        <h2>🔑 Login Mega.nz</h2>
+
+        <input type="email" placeholder="Email do Mega" bind:value={megaEmail} />
+        <input type="password" placeholder="Senha do Mega" bind:value={megaPassword} />
+
+        {#if loginError}
+          <p class="error-msg">{loginError}</p>
+        {/if}
+
+        <div class="modal-buttons">
+          <button class="btn-cancel" on:click={() => showMegaModal = false}>Cancelar</button>
+          <button class="btn-login" on:click={handleMegaLogin} disabled={!megaEmail || !megaPassword}>
+            Entrar
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
 </div>
 
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
 <style>
+  
   /* Layout Base */
   .app {
     display: flex;
@@ -237,4 +278,73 @@ async function handleScan() {
     padding: 8px;
     border-radius: 50%;
   }
+
+  /* Estilos do Modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal {
+    background: #2a2a2a;
+    padding: 30px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  }
+
+  .modal h2 { margin: 0 0 10px 0; font-size: 1.4rem; }
+
+  .modal input {
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #1a1a1a;
+    color: white;
+    font-size: 1rem;
+  }
+
+  .error-msg { color: #ff4444; font-size: 0.9rem; margin: 0; }
+
+  .modal-buttons { display: flex; gap: 10px; margin-top: 10px; }
+
+  .btn-cancel {
+    flex: 1;
+    background: #444;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .btn-login {
+    flex: 1;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .btn-login:disabled { opacity: 0.5; cursor: not-allowed; }
+  
+  /* Ajuste para o tema claro */
+  .light .modal { background: white; color: #333; }
+  .light .modal input { background: #f9f9f9; border-color: #ddd; color: #333; }
+
 </style>
