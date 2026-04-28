@@ -111,9 +111,12 @@ async function handleMegaLogin() {
   </header> 
 
   <div class="main-content">
-    <aside class="sidebar">
+ <aside class="sidebar">
       <nav>
-        </nav>
+        <button class="platform" class:active={currentPlatform === 'all'} on:click={() => currentPlatform = 'all'}>
+          🎮 Todos os jogos
+        </button>
+      </nav>
     </aside>
 
     <main class="content">
@@ -141,9 +144,23 @@ async function handleMegaLogin() {
         {/each}
       </div>
     </main>
-  </div> {#if showMegaModal}
-    <div class="modal-overlay" on:click={() => showMegaModal = false}>
-      <div class="modal" role="dialog" aria-modal="true" on:click|stopPropagation>
+  </div>
+  {#if showMegaModal}
+    <div 
+      class="modal-overlay" 
+      role="button" 
+      tabindex="0" 
+      on:click={() => showMegaModal = false} 
+      on:keydown={(e) => e.key === 'Escape' && (showMegaModal = false)}
+    >
+      <div 
+        class="modal" 
+        role="dialog" 
+        aria-modal="true" 
+        tabindex="-1" 
+        on:click|stopPropagation 
+        on:keydown|stopPropagation
+      >
         <h2>🔑 Login Mega.nz</h2>
 
         <input type="email" placeholder="Email do Mega" bind:value={megaEmail} />
@@ -163,12 +180,6 @@ async function handleMegaLogin() {
     </div>
   {/if}
 </div>
-
-  .app {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
 
 <style>
   

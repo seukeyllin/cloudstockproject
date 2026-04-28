@@ -10,8 +10,13 @@ export const romsStore = writable<Rom[]>([]);
 const PLATFORM_EXTENSIONS: Record<string, string[]> = {
   nes: ['.nes'],
   n64: ['.z64', '.n64', '.v64'],
-  ps1: ['.bin', '.iso', '.cue', '.chd'],
+  ps1: ['.bin', '.iso', '.cue', '.chd', '.rom'],
   ps2: ['.iso', '.chd', '.elf'],
+  gba: ['.gba'],
+  psp: ['.iso'],
+  snes: ['.sfc'],
+  gc: ['.iso', '.rvz', '.gcz'],
+
   // adicione mais plataformas aqui depois
 };
 
