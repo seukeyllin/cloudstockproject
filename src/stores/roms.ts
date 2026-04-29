@@ -8,13 +8,17 @@ import { join } from '@tauri-apps/api/path';
 export const romsStore = writable<Rom[]>([]);
 
 const PLATFORM_EXTENSIONS: Record<string, string[]> = {
+  n3ds: ['.cia', '.3ds', '.cci'],
+  snes: ['.sfc'],
+  wiiu: ['.wup', '.wud', '.wux', '.wua', '.rpx'],
   nes: ['.nes'],
   n64: ['.z64', '.n64', '.v64'],
   ps1: ['.bin', '.iso', '.cue', '.chd', '.rom'],
   ps2: ['.iso', '.chd', '.elf'],
   gba: ['.gba'],
   psp: ['.iso'],
-  snes: ['.sfc'],
+  nds: ['.nds'],
+  wii: ['.wbfs', '.iso', '.ciso', '.wad'],
   gc: ['.iso', '.rvz', '.gcz'],
 
   // adicione mais plataformas aqui depois
