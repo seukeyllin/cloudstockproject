@@ -1,15 +1,16 @@
 // src/types/rom.ts
 export interface Rom {
-  id: string;                    // nome do arquivo original (ex: "super-mario-bros.nes")
+  id: string;
   title: string;
   platform: string;
-  filePath: string;              // caminho completo no disco
-  coverPath?: string;            // ex: "downloaded_media/nes/covers/super-mario-bros.jpg"
+  filePath: string;
+  coverPath: string;
   size: number;
   lastModified: Date;
-
-  // Metadados que podem vir do cloudstore.metadata.txt
   year?: number;
   collection?: string;
   description?: string;
+  
+  // 🔥 O status mapeado corretamente no lugar certo!
+  status: 'local' | 'syncing' | 'cloud'; 
 }

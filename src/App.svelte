@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { romsStore, scanRoms } from './stores/roms';
+  import { romsStore, scanRoms, syncRomsWithMega } from './stores/roms';
   import type { Rom } from './types/rom';
   import { loadSettings, romsRootPath,savePath } from './stores/settings';
   import { megaStorage, isMegaLoggedIn,loginMega, logoutMega } from './stores/mega';
@@ -70,6 +70,8 @@ async function handleScan() {
 async function handleMegaLogin() {
   try {
     await loginMega(megaEmail, megaPassword);
+    // 🟢 NOVA LINHA: Sincroniza os status logo após logar com sucesso!
+    await syncRomsWithMega();
     showMegaModal = false;
     megaEmail = '';
     megaPassword = '';
@@ -131,6 +133,16 @@ async function handleMegaLogin() {
       <div class="rom-grid">
         {#each filteredRoms as rom}
           <div class="rom-card">
+            <div class="status-indicator">
+              {#if rom.status === 'cloud'}
+                <span title="Sincronizado na Nuvem">☁️</span>
+              {:else if rom.status === 'syncing'}
+                <span title="Sincronizando...">⏳</span>
+              {:else}
+                <span title="Apenas Local">💻</span>
+              {/if}
+            </div>
+            
             <div class="cover">
               {#if rom.coverPath}
                 <img src={rom.coverPath} alt={rom.title} />
@@ -257,8 +269,27 @@ async function handleMegaLogin() {
     text-align: center;
     transition: transform 0.2s;
     border: 1px solid #333;
+    position: relative; /*🟢 ADICIONADO PARA O BADGE FUNCIONAR */
   }
 
+/* 🟢 ESTILO DO NOVO INDICADOR */
+  .status-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: help;
+  }
+  
+  .light .status-indicator {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
   .rom-card:hover { transform: translateY(-5px); border-color: #444; }
   .cover { font-size: 3rem; margin-bottom: 10px; }
   .title { font-weight: bold; margin: 5px 0; }

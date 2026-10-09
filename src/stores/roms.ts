@@ -1,9 +1,10 @@
 // src/stores/roms.ts
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import type { Rom } from '../types/rom';
 import { loadMetadata, type MetadataMap } from '../utils/metadataParser';
-import { readDir, readFile, BaseDirectory } from '@tauri-apps/plugin-fs';
+import { readDir, stat, BaseDirectory } from '@tauri-apps/plugin-fs';
 import { join } from '@tauri-apps/api/path';
+import { megaStorage } from './mega';
 
 export const romsStore = writable<Rom[]>([]);
 
@@ -20,8 +21,6 @@ const PLATFORM_EXTENSIONS: Record<string, string[]> = {
   nds: ['.nds'],
   wii: ['.wbfs', '.iso', '.ciso', '.wad'],
   gc: ['.iso', '.rvz', '.gcz'],
-
-  // adicione mais plataformas aqui depois
 };
 
 export async function scanRoms(rootPath: string) {
@@ -55,7 +54,7 @@ export async function scanRoms(rootPath: string) {
         const meta = metadata.get(file.name.toLowerCase()) || {};
 
         const fullPath = await join(systemFolder, file.name);
-        const stats = await readFile(fullPath); // só pra pegar tamanho
+        const fileInfo = await stat(fullPath);
 
         const rom: Rom = {
           id: file.name,
@@ -63,11 +62,12 @@ export async function scanRoms(rootPath: string) {
           platform: platform.toUpperCase(),
           filePath: fullPath,
           coverPath: `downloaded_media/${platform}/covers/${file.name.replace(ext, '')}.jpg`,
-          size: stats.byteLength,
+          size: fileInfo.size, // 🟢 Agora pega o tamanho instantaneamente!
           lastModified: new Date(),
           year: meta.year,
           collection: meta.collection,
           description: meta.description,
+          status: 'local', // Usa o tipo que vai vir lá do outro arquivo
         };
 
         scannedRoms.push(rom);
@@ -76,7 +76,38 @@ export async function scanRoms(rootPath: string) {
 
     romsStore.set(scannedRoms);
     console.log(`✅ ${scannedRoms.length} ROMs encontrados e carregados!`);
+
+    await syncRomsWithMega();
   } catch (error) {
     console.error('❌ Erro no scan:', error);
+  }
+}
+
+export async function syncRomsWithMega() {
+  const storage = get(megaStorage);
+  
+  if (!storage) {
+    console.log('☁️ Sem sessão do Mega ativa para cruzar dados.');
+    return;
+  }
+
+  try {
+    const cloudFileNames = (storage.root?.children || []).map((node: any) => node.name.toLowerCase());
+
+    romsStore.update(currentRoms => {
+      return currentRoms.map(rom => {
+        const localFileName = rom.filePath.split(/[\\/]/).pop()?.toLowerCase();
+
+        if (localFileName && cloudFileNames.includes(localFileName)) {
+          return { ...rom, status: 'cloud' };
+        }
+
+        return { ...rom, status: 'local' };
+      });
+    });
+
+    console.log('🔄 Comparação CloudStock <> Mega concluída com sucesso!');
+  } catch (error) {
+    console.error('❌ Erro ao sincronizar listagem com o Mega:', error);
   }
 }
