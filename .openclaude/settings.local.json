@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "WebSearch",
+      "WebFetch(domain:mega.js.org)",
+      "Bash(dir:*)",
+      "Bash(cmd /c dir C:\\\\Users\\\\joaov\\\\Desktop\\\\CLOUDSTOCK\\\\cloudstockproject\\\\src\\\\stores)",
+      "Bash(cmd /c dir C:\\\\Users\\\\joaov\\\\Desktop\\\\CLOUDSTOCK\\\\cloudstockproject\\\\src\\\\components)",
+      "Bash(npm ls:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(find /c/Users/joaov/Desktop/CLOUDSTOCK/cloudstockproject/node_modules/megajs -name *.d.ts)",
+      "Bash(npx tsc:*)",
+      "Bash(npx svelte-check:*)",
+      "Bash(Get-Content C:\\\\Users\\\\joaov\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-joaov-Desktop-CLOUDSTOCK-cloudstockproject\\\\7ca47928-0561-4763-b0a4-54e46742558b\\\\tasks\\\\b3v14okp7.output)",
+      "Bash(find src-tauri:*)",
+      "Bash(ls src/*.d.ts)",
+      "Read(//c/Users/joaov/Desktop/CLOUDSTOCK/cloudstockproject/**)",
+      "Read(//c/Users/joaov/Retro Gaming/ROMs/**)",
+      "Read(//c/Users/joaov/Retro Gaming/ROMs/psp/**)",
+      "Read(//c/Users/joaov/Retro Gaming/ROMs/psp/media/**)",
+      "Bash(find 'C:\\\\Users\\\\joaov\\\\Retro Gaming\\\\ES-DE' -maxdepth 4 -iname downloaded_media -o -maxdepth 4 -iname *psp* -type d)",
+      "Bash(find 'C:\\\\Users\\\\joaov\\\\Retro Gaming' -iname *.jpg -o -iname *.png -o -iname *.jpeg -o -iname *.webp)",
+      "Bash(cat src-tauri/capabilities/*.json)",
+      "Bash(python -c \"import json; json.load\\(open\\(''src-tauri/capabilities/default.json''\\)\\)\")",
+      "Bash(ls C:UsersjoaovDesktopCLOUDSTOCKcloudstockprojectsrc/*.css)",
+      "Bash(grep -rn background C:UsersjoaovDesktopCLOUDSTOCKcloudstockprojectsrc/*.css)",
+      "Bash(grep -n \"const platforms\\\\|let platforms\\\\|$platforms\\\\|megaRoot\\\\b\\\\|let megaRoot\\\\|handleScan\\\\|openMegaFolderPicker\\\\|handleConnectMega\" \"C:\\\\Users\\\\joaov\\\\Desktop\\\\CLOUDSTOCK\\\\cloudstockproject\\\\src\\\\App.svelte\")",
+      "Bash(cargo check:*)",
+      "Bash(find C:UsersjoaovDesktopCLOUDSTOCKcloudstockprojectnode_modulesmegajs -name *.d.ts)",
+      "Bash(python -c \"import reportlab; print\\(''reportlab OK'', reportlab.Version\\)\")",
+      "Bash(python -c \"import fpdf; print\\(''fpdf OK'', fpdf.__version__\\)\")",
+      "Bash(python -c \"import reportlab; print\\(''reportlab'', reportlab.Version\\)\")",
+      "Bash(python -c \"import fpdf; print\\(''fpdf'', fpdf.__version__\\)\")",
+      "Bash(where python:*)",
+      "Bash(\"C:\\\\Users\\\\joaov\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\python.exe\" -m pip install reportlab --quiet)",
+      "Bash(\"C:\\\\Users\\\\joaov\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\python.exe\" \"C:\\\\Users\\\\joaov\\\\Desktop\\\\CLOUDSTOCK\\\\cloudstockproject\\\\gerar_relatorio.py\")"
+    ]
+  }
+}

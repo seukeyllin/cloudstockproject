@@ -5,12 +5,14 @@ export interface Rom {
   platform: string;
   filePath: string;
   coverPath: string;
+  // Handle do arquivo de capa no Mega (baixado em segundo plano)
+  coverHandle?: any | null;
   size: number;
   lastModified: Date;
   year?: number;
   collection?: string;
   description?: string;
-  
+
   // 🔥 O status mapeado corretamente no lugar certo!
-  status: 'local' | 'syncing' | 'cloud'; 
+  status: 'local' | 'syncing' | 'cloud';
 }

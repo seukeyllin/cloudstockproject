@@ -8,6 +8,27 @@
   "permissions": [
     "core:default",
     "fs:default",
+    {
+      "identifier": "fs:allow-read-dir",
+      "allow": [
+        { "path": "$HOME/**" },
+        { "path": "C:/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-read-file",
+      "allow": [
+        { "path": "$HOME/**" },
+        { "path": "C:/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-stat",
+      "allow": [
+        { "path": "$HOME/**" },
+        { "path": "C:/**" }
+      ]
+    },
     "dialog:default",
     "store:default"
   ]
