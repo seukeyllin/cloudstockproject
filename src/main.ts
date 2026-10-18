@@ -6,4 +6,7 @@ const app = mount(App, {
   target: document.getElementById('app')!,
 })
 
+// Remove a splash screen assim que o app montar
+document.getElementById('splash')?.remove()
+
 export default app
